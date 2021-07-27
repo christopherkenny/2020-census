@@ -18,8 +18,12 @@ years <- c(2016, 2018, 2020)
 for (year in years){
   states <- vest_states(year)
   for (state in states) {
-      fs::dir_create(here(state))
+    fs::dir_create(here(state))
     
+    if (!fs::file_exists(here(glue::glue('{state}/{state}_{year}_2020_block_data.csv'))) &
+        !fs::file_exists(here(glue::glue('{state}/{state}_{year}_2020_vtd_data.csv')))) {
+      
+      
       # Step 1: Match VEST precincts to 2010 Census blocks ----
       block <- tigris::blocks(state, year = 2010)
       vest <- get_vest(state = state, year = year, clean_names = FALSE) %>% 
@@ -39,7 +43,7 @@ for (year in years){
       for (election in elections) {
         elec_at_2010 <- elec_at_2010 %>% 
           mutate(!!election := estimate_down(value = vest[[election]], wts = dec[['vap']], 
-                               group = match_list))
+                                             group = match_list))
       }
       
       # Step 4: Crosswalk election data to 2020 blocks by area ----
@@ -73,6 +77,8 @@ for (year in years){
       }
       
       log_time(here('log_time.txt'), state, year)
+      
+    }
   }
 }
 
