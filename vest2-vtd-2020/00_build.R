@@ -27,6 +27,7 @@ utils::unzip(cw_zip_path, exdir=unz_path, overwrite=TRUE)
 proc_raw_cw = function(raw) {
   fields = str_split(raw, ",")
   map_dfr(fields, function(x) {
+    if (length(x) <= 1) return(tibble())
     tibble(GEOID_to = x[1],
            GEOID = x[seq(2, length(x), by=2L)],
            int_land = parse_number(x[seq(3, length(x), by=2L)]))
